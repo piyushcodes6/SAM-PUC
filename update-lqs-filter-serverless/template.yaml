@@ -1,0 +1,45 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  update-lqs-filters-serverless-v1
+
+  Sample SAM Template for update-lqs-serverless-v1
+  
+# More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
+Globals:
+  Function:
+    Timeout: 600
+
+Resources:
+  UpdateLQSFilters:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      FunctionName: update-lqs-filters-serverless-v1
+      CodeUri: update-lqs-serverless-v1/
+      Handler: index.handler
+      Runtime: nodejs18.x
+      Architectures:
+        - x86_64
+      MemorySize: 512  # 512 MB memory for the Lambda function
+      Timeout: 600     # 10 minutes timeout
+      Policies:
+        - AmazonS3FullAccess  # Full access to S3
+        - SecretsManagerReadWrite  # Full access to Secrets Manager
+        - AWSLambda_FullAccess  # Full access to Lambda resources
+        - AmazonSQSFullAccess   # Full access to SQS
+        - AmazonSESFullAccess   # Full access to SES
+      Events:
+        ScheduledEvent:
+          Type: Schedule
+          Properties:
+            Schedule: rate(10 minutes)
+            Input: '{"lob": "1"}'
+
+
+Outputs:
+  UpdateLQSFiltersName:
+    Description: The name of the UpdateLQsFILTER Lambda function
+    Value: !Ref UpdateLQSFilters
+  UpdateLQSFiltersArn:
+    Description: The ARN of the Update LQS FIlters Lambda function
+    Value: !GetAtt UpdateLQSFilters.Arn
